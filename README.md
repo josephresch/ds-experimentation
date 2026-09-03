@@ -8,7 +8,7 @@ The data is synthetic in every case. Product mechanics are calibrated to publicl
 
 | Folder | Company | Question | Status |
 |---|---|---|---|
-| `twitch-pricing/` | Twitch | Does cutting the local Tier 1 subscription price raise net platform revenue? | Design phase |
+| `twitch-pricing/` | Twitch | Does cutting the local Tier 1 subscription price raise net platform revenue? | Complete. Recommendation: do not ship the flat cut. |
 
 ## Why simulated
 

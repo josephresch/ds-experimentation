@@ -241,25 +241,27 @@ One notebook, executed with outputs committed so it renders on GitHub:
 
 | § | Section | Core idea |
 |---|---|---|
-| 0 | Setup and the 60-second framing | |
-| 1 | Pre-registration cell | Frozen before any data exists |
-| 2 | Build the simulated world | Power-law channels, nested heavy-tailed viewers, true demand curve |
-| 3 | Validate the simulator | Does it reproduce plausible moments? |
-| 4 | Power: naive → DEFF → simulation | The gap |
-| 5 | Power recovery | Marginal contribution of each lever |
-| 6 | Stratified randomization + balance | |
-| 7 | A/A test | False-positive rate by estimator |
-| 8 | Run the experiment | |
-| 9 | Health checks | SRM, trigger, missingness, ramp |
-| 10 | Primary analysis, four estimators | |
-| 11 | Elasticity read-out (compact) | Sets the MDE, cross-checks the revenue result, states what two cells can't tell you |
-| 12 | Secondaries (BH) and guardrails (non-inferiority) | |
-| 13 | Heterogeneity | Confirmatory then exploratory, with shrinkage |
-| 14 | Cross-product P&L | Ad cannibalization + existing-base repricing |
-| 15 | Long-run renewal cohort | |
-| 16 | Open the sealed envelope | Did we recover the true parameters? |
-| 17 | Decision memo | Verdict first, one page |
-| 18 | Interview drill | 20 likely questions, tight answers |
+| 1 | The business question | Objective, decision, scope boundary |
+| 2 | Unit of randomization | Leakage structure sets the unit |
+| 3 | Network and Bayesian angle | Interference as a network problem; where hierarchical models earn their place |
+| 4 | Metrics and decision rule | Pre-registered, five conditions |
+| 5 | The simulated world | Sealed generating parameters |
+| 6 | Simulator validation | Does it look like the product |
+| 7 | Power three ways | Naive, design effect, simulation |
+| 8 | Buying the power back | Pair matching, CUPED, analyse as you randomise |
+| 9 | Randomization and balance | Standardised differences, not p values |
+| 10 | A/A test | False positive rate by estimator |
+| 11 | Running the experiment | One draw, one read |
+| 12 | Health checks | SRM, placebo, instrumentation, dilution |
+| 13 | Primary analysis | Five estimators, two estimands |
+| 14 | Elasticity read | Break-even at -1, and what two cells cannot say |
+| 15 | Secondaries and guardrails | BH family, non-inferiority margins |
+| 16 | Heterogeneity | Partial pooling, winner's curse |
+| 17 | Cross-channel interference | ITT against GTE, exposure dose-response |
+| 18 | The ship decision | Existing-base repricing, threshold analysis |
+| 19 | Opening the sealed envelope | Did the machinery recover the truth |
+| 20 | Decision memo | Verdict first |
+| 21 | Interview drill | Likely questions, short answers |
 
 ### The sealed envelope
 
@@ -315,3 +317,23 @@ Local Tier 1 pricing and regional variation · 50/50 vs. Partner Plus 70/30 reve
 Bits economics · subscribers receiving ad-free viewing on the subscribed channel.
 See links in the chat thread; all figures are public and used only to keep orders of magnitude
 plausible.
+
+---
+
+## 13. Outcome
+
+The experiment was run. Summary, for the record, against what this document committed to in advance:
+
+| Pre-registered condition | Result |
+|---|---|
+| Health checks pass | Pass. SRM clean at both levels, pre-period placebo null. |
+| Primary effect positive, one-sided at 5% | Pass. Net revenue per eligible viewer +1.38% (CI +0.54% to +2.22%), p = 0.0007. |
+| Both guardrails clear non-inferiority at 2% | **Fail.** Bits revenue per viewer -3.1%, interval reaching -4.8%. |
+| Effect corrected for cross-channel interference | Corrected estimate +0.30%, an interference haircut of about 78%. |
+| Full ship P&L positive after existing-base repricing | **Fail.** Repricing the base costs roughly 34x the corrected gain. |
+
+Recommendation: do not ship the flat cut. Test a discounted first month instead, which captures the acquisition elasticity without repricing anyone already paying.
+
+The full readout is in `twitch_pricing_experiment.ipynb`, section 20.
+
+Two conditions failed independently. Writing all five down before seeing data is what made that a finding rather than a negotiation.
