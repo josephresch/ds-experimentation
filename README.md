@@ -14,6 +14,8 @@ and published benchmarks, so the reasoning transfers. Nothing here is internal t
 | 01 | [Twitch local subscription pricing test](01-twitch-subscription-pricing.md) | Does cutting the Tier 1 subscription price raise net platform revenue? A full simulated experiment: power, cluster randomization, A/A validation, interference correction, decision memo. Recommendation: do not ship the flat cut. |
 | 02 | [Replacing a binned markup rule with product-level price optimization](02-wayfair-pricing.md) | Where a bucketed margin rule leaves money on the table, and what replaces it. Price endogeneity and identification, predict-then-optimize, hierarchical shrinkage across a long tail, off-policy evaluation, exploration collapse. |
 | 03 | [Targeting a packaging intervention with a damage-risk model](03-wayfair-returns.md) | Returns cost more than the margin on the sale. Label definition and right-censored label maturity, point-in-time feature correctness, class imbalance and calibration, cost-derived thresholds, treatment-contaminated labels. |
+| 04 | [Targeting a coupon program with an uplift model](04-wayfair-promotions.md) | A monthly coupon program reported as 10:1 may be losing $6M a quarter. A target with no label on any row, positivity destroyed by the incumbent targeting model, uplift curves and budget-constrained send depth, pull-forward and deal conditioning. |
+| 05 | [Allocating scarce exposure across a long-tail catalog](05-wayfair-underperforming-products.md) | "Which products are underperforming" is the wrong question on a catalog where the median SKU sells zero. Exposure-confounded labels, count models with an offset, a learned prior with a conjugate update, Thompson sampling over a scarce resource, and why the catalog cannot be evaluated. |
 
 
 ## Layout
@@ -23,5 +25,5 @@ that company.
 
 ```
 twitch/    README, design document, executed notebook
-wayfair/   the two design studies
+wayfair/   the four design studies
 ```
