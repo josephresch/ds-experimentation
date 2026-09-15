@@ -228,9 +228,10 @@ affinity is the wrong grain unless aggregated to the SKU.
 
 ## 5. Model class and estimation
 
-A convolutional network is for data with local spatial structure, not for large datasets in general,
-and the embeddings are computed upstream in any case. What is needed downstream maps a few hundred
-dense dimensions plus tabular features to a distribution.
+A convolutional network is for data with local spatial structure, not for large datasets in general.
+What is needed downstream maps a few hundred dense dimensions plus tabular features to a
+distribution. Whether those dense dimensions arrive precomputed is itself a design decision and is
+treated below.
 
 **Architecture: a learned prior with a conjugate update.**
 
@@ -249,6 +250,50 @@ accumulate. A prediction interval on the count conflates the two. The conjugate 
 
 Baseline first. A negative binomial GLM with a log-impressions offset. Fit it, beat it, and report
 the size of the beat.
+
+### Embeddings and model class
+
+Three options rather than two. A frozen pretrained encoder with its embeddings used as features, an
+end-to-end model with image and text towers trained jointly against the target, or an encoder adapted
+on a high-volume proxy label and then frozen.
+
+The exposure confound in section 6 decides it. End-to-end training points the largest available
+capacity at a target that encodes the incumbent ranker's decisions. A jointly trained vision tower
+can learn that a particular photographic style predicts sales, when what it has actually learned is
+which suppliers receive merchandising investment and therefore rank well. A frozen encoder cannot do
+that, because it never sees the label. Freezing is a constraint on what the model is able to absorb,
+not only a saving on compute.
+
+The second question is what consumes the embedding, and the common answer is weak. Gradient-boosted
+trees split on one coordinate at a time, while a learned embedding carries its information in
+directions rather than in coordinates. Approximating a linear function of 512 inputs with
+axis-aligned boxes takes exponentially many splits, so the tree spends capacity rediscovering weak
+approximations to the same direction. Concatenating a thousand embedding dimensions alongside fifty
+features that do have meaningful axes, then subsampling columns, dilutes the features that are
+interpretable. The failure is inefficiency rather than incapacity, and three cheap alternatives
+dominate it.
+
+- Project the embeddings to 16 to 64 dimensions with PCA or a learned linear map, then fit the tree
+- Fit a small head on the embedding alone and pass its scalar output to the tree as one feature
+- Drop the tree and use an MLP over the concatenation, which the negative binomial head with a
+  log-impressions offset wants in any case
+
+The published finding that tree ensembles still beat neural networks on tabular data concerns
+features with meaningful axes. It does not license feeding dense embeddings to a boosted tree.
+
+Two facts scope the decision. Furniture photographed on a white background sits inside what
+general-purpose encoders already cover, so the marginal gain from adapting one is smaller here than
+in a domain far from the pretraining distribution. And embeddings only matter in the day-zero regime,
+since mature SKUs carry add-to-cart and browse history that dominates any image signal. The
+investment is about the 200,000 cold-start products a quarter and should be sized accordingly.
+
+Where adaptation does earn its place, the label to adapt on is add-to-cart rather than long-horizon
+revenue. Add-to-cart has the same behavioral shape, arrives in days instead of months, and carries
+far more events per SKU, so the representation becomes task-adapted without spending the sparse and
+confounded terminal outcome. Freeze it afterward and treat it as any other embedding.
+
+The ordering follows. Fit the tabular baseline, add one projected image or text score, and measure
+the lift. If the lift is absent, the whole multimodal pipeline is unnecessary.
 
 Three splits answer three questions. Listing date asks whether the model can score an unseen
 cohort, and it is the primary split. Grouping by supplier asks whether it can score a new supplier.
@@ -398,3 +443,4 @@ and report how extreme that requirement is.
 
 - [Wayfair Q1 2026 results](https://investor.wayfair.com/news/news-details/2026/Wayfair-Announces-First-Quarter-2026-Results-Reports-Strong-Share-Capture-and-a-Return-to-Active-Customer-Growth/default.aspx)
 - [How Wayfair uses Predicted Winners models to accelerate success for new products](https://www.aboutwayfair.com/careers/tech-blog/how-wayfair-uses-predicted-winners-models-to-accelerate-success-for-new-products)
+- [Why do tree-based models still outperform deep learning on typical tabular data?](https://neurips.cc/virtual/2022/poster/55627)
